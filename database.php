@@ -2,7 +2,7 @@
 
     $db_server = "localhost";
     $db_user = "paul";
-    $db_pass = "";
+    $db_pass = "paul1234";
     $db_name = "businessdb";
     $conn = "";
 
