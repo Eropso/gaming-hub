@@ -1,3 +1,8 @@
+<?php
+session_start();
+include("database.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,16 +15,32 @@
     <div class="container">
         <h1 class="title">Erozone</h1>
 
+        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+            <p>Welcome, <?php echo htmlspecialchars($_SESSION['email']); ?>!</p>
+            <a href="logout.php" class="logout-button">Logout</a>
+        <?php endif; ?>
+
         <div class="game-cards">
-            <a href="login.php?redirect=./spill/index.html" class="game-card">
-                <img src="./spill/punch.png" alt="Punch">
-                <h3>Punch Game</h3>
-            </a>
-            
+            <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+                <a href="./spill/index.html" class="game-card">
+                    <img src="./spill/punch.png" alt="Punch">
+                    <h3>Punch Game</h3>
+                </a>
+                <a href="./spill/index.html" class="game-card">
+                    <img src="./spill/punch.png" alt="Punch">
+                    <h3>Punch Game</h3>
+                </a>
+            <?php else: ?>
+                <a href="login.php?redirect=./spill/index.html" class="game-card">
+                    <img src="./spill/punch.png" alt="Punch">
+                    <h3>Punch Game</h3>
+                </a>
+                <a href="login.php?redirect=./spill/index.html" class="game-card">
+                    <img src="./spill/punch.png" alt="Punch">
+                    <h3>Punch Game</h3>
+                </a>
+            <?php endif; ?>
         </div>
-
-        
     </div>
-
 </body>
 </html>

@@ -1,14 +1,12 @@
 <?php
 session_start();
 include("database.php");
-
 require 'phpmailer/src/Exception.php';
 require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
 
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'hub.php';
 
@@ -92,11 +90,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
 <div class="form-container">
     <h2>Login or Register</h2>
 
-    <!-- Login Form -->
     <form action="" method="POST">
         <div>
             <input type="email" name="email" placeholder="Email" required>
@@ -107,6 +103,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
         <button type="submit" name="submit" value="register">Sign Up / Sign In</button>
     </form>
 </div>
-
 </body>
 </html>
