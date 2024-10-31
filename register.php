@@ -27,50 +27,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
         mysqli_stmt_bind_param($stmt, "ss", $email, $username, $hash);
         if (mysqli_stmt_execute($stmt)) {
             echo "You are registered!";
+
+            // Generate OTP and send it
+            $otp = rand(100000, 999999);
+            $_SESSION['otp'] = $otp;
+            $_SESSION['email'] = $email;
+            $_SESSION['redirect'] = $redirect; // Store redirect URL
+
+            // Send OTP via email using PHPMailer
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'phpkuben@gmail.com';
+                $mail->Password = 'srnq cqiy dqzu kyfl';
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+
+                $mail->setFrom('from@example.com', 'EroZone');
+                $mail->addAddress($email);
+                $mail->isHTML(true);
+                $mail->Subject = 'Verification Code for EroZone Registration';
+                $mail->Body = "Your Verification Code is <b>$otp</b>";
+                $mail->AltBody = "Your Verification Code is $otp";
+
+                $mail->send();
+
+                // Redirect to OTP verification page
+                header("Location: verify_otp.php");
+                exit();
+            } catch (Exception $e) {
+                echo "Error: {$mail->ErrorInfo}";
+            }
         } else {
             echo "Registration failed.";
-        }
-    
-
-        if (mysqli_num_rows($result) > 0) {
-            // User exists, verify password
-            $user = mysqli_fetch_assoc($result);
-            if (password_verify($password, $user['password'])) {
-                // Password correct, generate OTP
-                $otp = rand(100000, 999999);
-                $_SESSION['otp'] = $otp;
-                $_SESSION['email'] = $email;
-                $_SESSION['redirect'] = $redirect; // Store redirect URL
-
-                // Send OTP via email using PHPMailer
-                $mail = new PHPMailer(true);
-                try {
-                    $mail->isSMTP();
-                    $mail->Host = 'smtp.gmail.com';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = 'phpkuben@gmail.com';
-                    $mail->Password = 'srnq cqiy dqzu kyfl';
-                    $mail->SMTPSecure = 'tls';
-                    $mail->Port = 587;
-
-                    $mail->setFrom('from@example.com', 'EroZone');
-                    $mail->addAddress($email);
-                    $mail->isHTML(true);
-                    $mail->Subject = 'Verification Code for EroZone Login';
-                    $mail->Body = "Your Verification Code is <b>$otp</b>";
-                    $mail->AltBody = "Your Verification Code is $otp";
-
-                    $mail->send();
-
-                    // Redirect to OTP verification page
-                    header("Location: verify_otp.php");
-                    exit();
-                } catch (Exception $e) {
-                    echo "Error: {$mail->ErrorInfo}";
-                }
-            } else {
-                echo "Incorrect password. Please try again.";
-            }
         }
     }
 }
