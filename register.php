@@ -12,6 +12,7 @@ $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'hub.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['submit'] === 'register') {
     $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+    $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_SPECIAL_CHARS);
     $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
 
     if (empty($email)) {
@@ -19,12 +20,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
     } elseif (empty($password)) {
         echo "Please enter a valid password.";
     } else {
-        // Check if user exists
-        $sql = "SELECT * FROM users WHERE user = ?";
+        // Register new user
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO users (user, username, password) VALUES (?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $email);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        mysqli_stmt_bind_param($stmt, "ss", $email, $username, $hash);
+        if (mysqli_stmt_execute($stmt)) {
+            echo "You are registered!";
+        } else {
+            echo "Registration failed.";
+        }
+    
 
         if (mysqli_num_rows($result) > 0) {
             // User exists, verify password
@@ -65,8 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
             } else {
                 echo "Incorrect password. Please try again.";
             }
-        } else {
-            echo "User not found, check your credentials and make sure they are correct";
         }
     }
 }
@@ -86,17 +90,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
 
     <form action="" method="POST">
         <div>
+            <input type="text" name="username" placeholder="Username" required>
+        </div>
+        <div>
             <input type="email" name="email" placeholder="Email" required>
         </div>
         <div>
             <input type="password" name="password" placeholder="Password" required>
         </div>
         <button type="submit" name="submit" value="register">Sign Up / Sign In</button>
-
-        <p>
-            Not a user?
-            <a href="register.php">Register yourself now</a>
-        </p>
     </form>
 </div>
 </body>
