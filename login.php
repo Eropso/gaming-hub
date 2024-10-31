@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
     $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
 
     if (empty($email) || empty($password)) {
-        echo "Please fill in both fields.";
+        echo "Please fill all fields.";
     } else {
         // Check if user exists
         $sql = "SELECT * FROM users WHERE user = ?";
@@ -32,6 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                 $otp = rand(100000, 999999);
                 $_SESSION['otp'] = $otp;
                 $_SESSION['email'] = $email;
+                $_SESSION['is_new_user'] = false; // Flag for existing user
 
                 // Send OTP via email using PHPMailer
                 $mail = new PHPMailer(true);
@@ -63,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                 echo "Incorrect password. Please try again.";
             }
         } else {
-            echo "User not found. Please check your credentials.";
+            echo "User not found, check your credentials and make sure they are correct.";
         }
     }
 }
@@ -88,11 +89,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
             <input type="password" name="password" placeholder="Password" required>
         </div>
         <button type="submit" name="submit" value="login">Log In</button>
+
+        <p>
+            Not a user?
+            <a href="register.php">Register yourself now</a>
+        </p>
     </form>
-    <p>
-        Not a user? 
-        <a href="register.php">Register yourself now</a>
-    </p>
 </div>
 </body>
 </html>

@@ -28,47 +28,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
         if (mysqli_num_rows($result_check) > 0) {
             echo "User already exists. Please log in.";
         } else {
-            // Register new user
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO users (user, username, password) VALUES (?, ?, ?)";
-            $stmt = mysqli_prepare($conn, $sql);
-            mysqli_stmt_bind_param($stmt, "sss", $email, $username, $hash);
-            if (mysqli_stmt_execute($stmt)) {
-                echo "You are registered!";
+            // Store user data in session
+            $_SESSION['new_user'] = [
+                'email' => $email,
+                'username' => $username,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+            ];
+            $_SESSION['is_new_user'] = true; // Set flag for new user registration
 
-                // Generate OTP and send it
-                $otp = rand(100000, 999999);
-                $_SESSION['otp'] = $otp;
-                $_SESSION['email'] = $email;
+            // Generate OTP and send it
+            $otp = rand(100000, 999999);
+            $_SESSION['otp'] = $otp;
 
-                // Send OTP via email using PHPMailer
-                $mail = new PHPMailer(true);
-                try {
-                    $mail->isSMTP();
-                    $mail->Host = 'smtp.gmail.com';
-                    $mail->SMTPAuth = true;
-                    $mail->Username = 'phpkuben@gmail.com';
-                    $mail->Password = 'srnq cqiy dqzu kyfl'; // Keep credentials secure
-                    $mail->SMTPSecure = 'tls';
-                    $mail->Port = 587;
+            // Send OTP via email using PHPMailer
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'phpkuben@gmail.com';
+                $mail->Password = 'srnq cqiy dqzu kyfl'; // Keep credentials secure
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
 
-                    $mail->setFrom('from@example.com', 'EroZone');
-                    $mail->addAddress($email);
-                    $mail->isHTML(true);
-                    $mail->Subject = 'Verification Code for EroZone Registration';
-                    $mail->Body = "Your Verification Code is <b>$otp</b>";
-                    $mail->AltBody = "Your Verification Code is $otp";
+                $mail->setFrom('from@example.com', 'EroZone');
+                $mail->addAddress($email);
+                $mail->isHTML(true);
+                $mail->Subject = 'Verification Code for EroZone Registration';
+                $mail->Body = "Your Verification Code is <b>$otp</b>";
+                $mail->AltBody = "Your Verification Code is $otp";
 
-                    $mail->send();
+                $mail->send();
 
-                    // Redirect to OTP verification page
-                    header("Location: verify_otp.php");
-                    exit();
-                } catch (Exception $e) {
-                    echo "Error: {$mail->ErrorInfo}";
-                }
-            } else {
-                echo "Registration failed.";
+                // Redirect to OTP verification page
+                header("Location: verify_otp.php");
+                exit();
+            } catch (Exception $e) {
+                echo "Error: {$mail->ErrorInfo}";
             }
         }
     }

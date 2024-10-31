@@ -11,14 +11,38 @@ if (!isset($_SESSION['otp'])) {
 if (isset($_POST['submit']) && $_POST['submit'] === 'verify_otp') {
     $entered_otp = filter_input(INPUT_POST, 'otp', FILTER_SANITIZE_NUMBER_INT);
     if ($entered_otp == $_SESSION['otp']) {
-        // OTP verified, set session
-        $_SESSION['loggedin'] = true;
-        unset($_SESSION['otp']);
+        if (isset($_SESSION['is_new_user']) && $_SESSION['is_new_user'] === true) {
+            // New user registration
+            $userData = $_SESSION['new_user'];
+            $sql = "INSERT INTO users (user, username, password) VALUES (?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "sss", $userData['email'], $userData['username'], $userData['password']);
+            if (mysqli_stmt_execute($stmt)) {
+                // Registration successful
+                $_SESSION['loggedin'] = true;
+                unset($_SESSION['otp']);
+                unset($_SESSION['new_user']);
+                unset($_SESSION['is_new_user']);
 
-        // Redirect to the original game or hub
-        $redirect = isset($_SESSION['redirect']) ? $_SESSION['redirect'] : 'hub.php';
-        header("Location: " . $redirect);
-        exit();
+                // Redirect to the original game or hub
+                $redirect = isset($_SESSION['redirect']) ? $_SESSION['redirect'] : 'hub.php';
+                header("Location: " . $redirect);
+                exit();
+            } else {
+                echo "Registration failed.";
+            }
+        } else {
+            // Existing user login
+            $_SESSION['loggedin'] = true; // Login successful
+            unset($_SESSION['otp']);
+            unset($_SESSION['email']);
+            unset($_SESSION['is_new_user']);
+
+            // Redirect to the original game or hub
+            $redirect = isset($_SESSION['redirect']) ? $_SESSION['redirect'] : 'hub.php';
+            header("Location: " . $redirect);
+            exit();
+        }
     } else {
         echo "Invalid Verification Code. Please try again.";
     }
