@@ -8,16 +8,14 @@ require 'phpmailer/src/SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'hub.php';
+$redirect = 'hub.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['submit'] === 'register') {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['submit'] === 'login') {
     $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
     $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
 
-    if (empty($email)) {
-        echo "Please enter a valid email.";
-    } elseif (empty($password)) {
-        echo "Please enter a valid password.";
+    if (empty($email) || empty($password)) {
+        echo "Please fill in both fields.";
     } else {
         // Check if user exists
         $sql = "SELECT * FROM users WHERE user = ?";
@@ -34,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                 $otp = rand(100000, 999999);
                 $_SESSION['otp'] = $otp;
                 $_SESSION['email'] = $email;
-                $_SESSION['redirect'] = $redirect; // Store redirect URL
 
                 // Send OTP via email using PHPMailer
                 $mail = new PHPMailer(true);
@@ -43,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
                     $mail->Username = 'phpkuben@gmail.com';
-                    $mail->Password = 'srnq cqiy dqzu kyfl';
+                    $mail->Password = 'srnq cqiy dqzu kyfl'; // Keep credentials secure
                     $mail->SMTPSecure = 'tls';
                     $mail->Port = 587;
 
@@ -66,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                 echo "Incorrect password. Please try again.";
             }
         } else {
-            echo "User not found, check your credentials and make sure they are correct";
+            echo "User not found. Please check your credentials.";
         }
     }
 }
@@ -77,13 +74,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Register</title>
+    <title>Login</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="form-container">
-    <h2>Login or Register</h2>
-
+    <h2>Login</h2>
     <form action="" method="POST">
         <div>
             <input type="email" name="email" placeholder="Email" required>
@@ -91,13 +87,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
         <div>
             <input type="password" name="password" placeholder="Password" required>
         </div>
-        <button type="submit" name="submit" value="register">Sign Up / Sign In</button>
-
-        <p>
-            Not a user?
-            <a href="register.php">Register yourself now</a>
-        </p>
+        <button type="submit" name="submit" value="login">Log In</button>
     </form>
+    <p>
+        Not a user? 
+        <a href="register.php">Register yourself now</a>
+    </p>
 </div>
 </body>
 </html>
