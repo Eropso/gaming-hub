@@ -16,28 +16,27 @@ include("database.php");
         <h1 class="title">Erozone</h1>
 
         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
-            <p>Welcome, <?php echo htmlspecialchars($_SESSION['email']); ?>!</p>
             <a href="logout.php" class="logout-button">Logout</a>
         <?php endif; ?>
 
         <div class="game-cards">
             <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
-                <a href="./spill/index.html" class="game-card">
+                <a href="./spill/index.php" class="game-card">
                     <img src="./spill/punch.png" alt="Punch">
                     <h3>Punch Game</h3>
                 </a>
-                <a href="./spill/index.html" class="game-card">
-                    <img src="./spill/punch.png" alt="Punch">
-                    <h3>Punch Game</h3>
+                <a href="./minesweeper/index.html" class="game-card">
+                    <p>💣</p>
+                    <h3>Minesweeper</h3>
                 </a>
             <?php else: ?>
-                <a href="login.php?redirect=./spill/index.html" class="game-card">
+                <a href="login.php?redirect=./spill/index.php" class="game-card">
                     <img src="./spill/punch.png" alt="Punch">
                     <h3>Punch Game</h3>
                 </a>
-                <a href="login.php?redirect=./spill/index.html" class="game-card">
-                    <img src="./spill/punch.png" alt="Punch">
-                    <h3>Punch Game</h3>
+                <a href="login.php?redirect=./minesweeper/index.html" class="game-card">
+                <p>💣</p>
+                <h3>Minesweeper</h3>
                 </a>
             <?php endif; ?>
         </div>
