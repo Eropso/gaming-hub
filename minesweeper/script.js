@@ -10,20 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
     let flags = 0;
     let startTime;
     let timerInterval;
+    let firstClick = true;
 
     function createBoard() {
         flagsLeft.innerHTML = bombAmount;
 
-        //get shuffled game array with random bombs
-        const bombArray = Array(bombAmount).fill('bomb');
-        const emptyArray = Array(width * width - bombAmount).fill('valid');
-        const gameArray = emptyArray.concat(bombArray);
-        const shuffledArray = gameArray.sort(() => Math.random() - 0.5);
-
+        // Create empty board first, without bombs
         for (let i = 0; i < width * width; i++) {
             const square = document.createElement('div');
             square.id = i;
-            square.classList.add(shuffledArray[i]);
+            square.classList.add('valid'); // All squares start as valid
             grid.appendChild(square);
             squares.push(square);
 
@@ -38,25 +34,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 addFlag(square);
             });
         }
+    }
 
-        //add numbers
+    function generateBombs(firstClickId) {
+        // Create safe zone around first click
+        const safeZone = getSafeZoneIndices(parseInt(firstClickId));
+        
+        // Create array of possible bomb positions (excluding safe zone)
+        let possibleBombPositions = [];
+        for (let i = 0; i < width * width; i++) {
+            if (!safeZone.includes(i)) {
+                possibleBombPositions.push(i);
+            }
+        }
+
+        // Randomly select bomb positions
+        for (let i = 0; i < bombAmount; i++) {
+            const randomIndex = Math.floor(Math.random() * possibleBombPositions.length);
+            const bombPosition = possibleBombPositions[randomIndex];
+            squares[bombPosition].classList.remove('valid');
+            squares[bombPosition].classList.add('bomb');
+            possibleBombPositions.splice(randomIndex, 1);
+        }
+
+        // Add numbers
         for (let i = 0; i < squares.length; i++) {
-            let total = 0;
-            const isLeftEdge = (i % width === 0);
-            const isRightEdge = (i % width === width - 1);
-
             if (squares[i].classList.contains('valid')) {
-                if (i > 0 && !isLeftEdge && squares[i - 1].classList.contains('bomb')) total++;
-                if (i > 9 && !isRightEdge && squares[i + 1 - width].classList.contains('bomb')) total++;
-                if (i > 10 && squares[i - width].classList.contains('bomb')) total++;
-                if (i > 11 && !isLeftEdge && squares[i - 1 - width].classList.contains('bomb')) total++;
-                if (i < 98 && !isRightEdge && squares[i + 1].classList.contains('bomb')) total++;
-                if (i < 90 && !isLeftEdge && squares[i - 1 + width].classList.contains('bomb')) total++;
-                if (i < 88 && !isRightEdge && squares[i + 1 + width].classList.contains('bomb')) total++;
-                if (i < 89 && squares[i + width].classList.contains('bomb')) total++;
+                let total = calculateTotal(i);
                 squares[i].setAttribute('data', total);
             }
         }
+    }
+
+    function getSafeZoneIndices(centerIndex) {
+        const safeZone = [centerIndex];
+        const isLeftEdge = (centerIndex % width === 0);
+        const isRightEdge = (centerIndex % width === width - 1);
+
+        // Add all surrounding squares to safe zone
+        if (centerIndex > 0 && !isLeftEdge) safeZone.push(centerIndex - 1);
+        if (centerIndex > 9 && !isRightEdge) safeZone.push(centerIndex + 1 - width);
+        if (centerIndex > 10) safeZone.push(centerIndex - width);
+        if (centerIndex > 11 && !isLeftEdge) safeZone.push(centerIndex - 1 - width);
+        if (centerIndex < 98 && !isRightEdge) safeZone.push(centerIndex + 1);
+        if (centerIndex < 90 && !isLeftEdge) safeZone.push(centerIndex - 1 + width);
+        if (centerIndex < 88 && !isRightEdge) safeZone.push(centerIndex + 1 + width);
+        if (centerIndex < 89) safeZone.push(centerIndex + width);
+
+        return safeZone;
+    }
+
+    function calculateTotal(index) {
+        let total = 0;
+        const isLeftEdge = (index % width === 0);
+        const isRightEdge = (index % width === width - 1);
+
+        if (index > 0 && !isLeftEdge && squares[index - 1].classList.contains('bomb')) total++;
+        if (index > 9 && !isRightEdge && squares[index + 1 - width].classList.contains('bomb')) total++;
+        if (index > 10 && squares[index - width].classList.contains('bomb')) total++;
+        if (index > 11 && !isLeftEdge && squares[index - 1 - width].classList.contains('bomb')) total++;
+        if (index < 98 && !isRightEdge && squares[index + 1].classList.contains('bomb')) total++;
+        if (index < 90 && !isLeftEdge && squares[index - 1 + width].classList.contains('bomb')) total++;
+        if (index < 88 && !isRightEdge && squares[index + 1 + width].classList.contains('bomb')) total++;
+        if (index < 89 && squares[index + width].classList.contains('bomb')) total++;
+
+        return total;
     }
 
     createBoard();
@@ -83,7 +125,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!startTime) {
             startTimer();
         }
+
         if (isGameOver || square.classList.contains('checked') || square.classList.contains('flag')) return;
+
+        // Handle first click
+        if (firstClick) {
+            firstClick = false;
+            generateBombs(square.id);
+            // Automatically reveal area around first click
+            checkSquare(square);
+            return;
+        }
 
         if (square.classList.contains('bomb')) {
             gameOver();
@@ -134,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const newSquare = document.getElementById(newId);
                 click(newSquare);
             }
-            if (currentId < 90 && !isLeftEdge) {
+            if (currentId <  90 && !isLeftEdge) {
                 const newId = currentId - 1 + width;
                 const newSquare = document.getElementById(newId);
                 click(newSquare);
@@ -153,60 +205,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function gameOver() {
-        stopTimer();
-        result.innerHTML = 'BOOM! Game Over!';
         isGameOver = true;
-
-        //show all the bombs
+        result.innerHTML = 'Game Over!';
+        // Reveal all bombs
         squares.forEach(square => {
             if (square.classList.contains('bomb')) {
+                square.classList.remove('valid');
+                square.classList.add('bomb');
                 square.innerHTML = '💣';
-                square.classList.remove('bomb');
-                square.classList.add('checked');
             }
         });
     }
 
     function checkForWin() {
-        let matches = 0;
-        for (let i = 0; i < squares.length; i++) {
-            if (squares[i].classList.contains('flag') && squares[i].classList.contains('bomb')) {
-                matches++;
+        let matchedFlags = 0;
+        squares.forEach(square => {
+            if (square.classList.contains('flag') && square.classList.contains('bomb')) {
+                matchedFlags++;
             }
-            if (matches === bombAmount) {
-                stopTimer();
-                const finalTime = parseInt(timerDisplay.textContent);
-                result.innerHTML = 'YOU WIN!';
-                isGameOver = true;
-                saveScore(finalTime);
-            }
+        });
+        if (matchedFlags === bombAmount) {
+            isGameOver = true;
+            result.innerHTML = 'You Win!';
         }
     }
 
     function startTimer() {
         startTime = Date.now();
-        timerInterval = setInterval(updateTimer, 100);        
-    }
-
-    function updateTimer() {
-        const currentTime = Date.now();
-        const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-        timerDisplay.textContent = elapsedTime;
-    }
-
-    function stopTimer() {
-        clearInterval(timerInterval);
-    }
-
-    function saveScore(time) {
-        fetch('save_score.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'time=' + time })
-        .then(response => response.text())
-        .then(data => console.log(data))
-        .catch((error) => console.error('Error:', error));
+        timerInterval = setInterval(() => {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            timerDisplay.innerHTML = elapsedTime;
+        }, 1000);
     }
 });
