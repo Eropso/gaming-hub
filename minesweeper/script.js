@@ -70,19 +70,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const safeZone = [centerIndex];
         const isLeftEdge = (centerIndex % width === 0);
         const isRightEdge = (centerIndex % width === width - 1);
-
-        // Add all surrounding squares to safe zone
-        if (centerIndex > 0 && !isLeftEdge) safeZone.push(centerIndex - 1);
-        if (centerIndex > 9 && !isRightEdge) safeZone.push(centerIndex + 1 - width);
-        if (centerIndex > 10) safeZone.push(centerIndex - width);
-        if (centerIndex > 11 && !isLeftEdge) safeZone.push(centerIndex - 1 - width);
-        if (centerIndex < 98 && !isRightEdge) safeZone.push(centerIndex + 1);
-        if (centerIndex < 90 && !isLeftEdge) safeZone.push(centerIndex - 1 + width);
-        if (centerIndex < 88 && !isRightEdge) safeZone.push(centerIndex + 1 + width);
-        if (centerIndex < 89) safeZone.push(centerIndex + width);
-
+    
+        if (centerIndex > 0 && !isLeftEdge) safeZone.push(centerIndex - 1); // Left
+        if (centerIndex > width - 1) safeZone.push(centerIndex - width); // Above
+        if (centerIndex > width && !isRightEdge) safeZone.push(centerIndex - width + 1); // Above right
+        if (centerIndex < width * (width - 1)) safeZone.push(centerIndex + width); // Below
+        if (centerIndex < width * (width - 1) - 1 && !isRightEdge) safeZone.push(centerIndex + width + 1); // Below right
+        if (centerIndex < width * (width - 1) && !isLeftEdge) safeZone.push(centerIndex + width - 1); // Below left
+        if (centerIndex < width - 1 && !isRightEdge) safeZone.push(centerIndex + 1); // Right
+        if (centerIndex > width && !isLeftEdge) safeZone.push(centerIndex - width - 1); // Above left
+    
         return safeZone;
     }
+    
 
     function calculateTotal(index) {
         let total = 0;
@@ -159,51 +159,52 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentId = parseInt(square.id);
         const isLeftEdge = (currentId % width === 0);
         const isRightEdge = (currentId % width === width - 1);
-
+    
         setTimeout(() => {
+            // Check neighboring squares while avoiding out-of-bounds indices
             if (currentId > 0 && !isLeftEdge) {
                 const newId = currentId - 1;
                 const newSquare = document.getElementById(newId);
-                click(newSquare);
+                if (newSquare) click(newSquare);
             }
-            if (currentId > 9 && !isRightEdge) {
-                const newId = currentId + 1 - width;
-                const newSquare = document.getElementById(newId);
-                click(newSquare);
-            }
-            if (currentId > 10) {
+            if (currentId > width - 1) {
                 const newId = currentId - width;
                 const newSquare = document.getElementById(newId);
-                click(newSquare);
+                if (newSquare) click(newSquare);
             }
-            if (currentId > 11 && !isLeftEdge) {
-                const newId = currentId - 1 - width;
+            if (currentId > width && !isRightEdge) {
+                const newId = currentId - width + 1;
                 const newSquare = document.getElementById(newId);
-                click(newSquare);
+                if (newSquare) click(newSquare);
             }
-            if (currentId < 98 && !isRightEdge) {
-                const newId = currentId + 1;
-                const newSquare = document.getElementById(newId);
-                click(newSquare);
-            }
-            if (currentId <  90 && !isLeftEdge) {
-                const newId = currentId - 1 + width;
-                const newSquare = document.getElementById(newId);
-                click(newSquare);
-            }
-            if (currentId < 88 && !isRightEdge) {
-                const newId = currentId + 1 + width;
-                const newSquare = document.getElementById(newId);
-                click(newSquare);
-            }
-            if (currentId < 89) {
+            if (currentId < width * (width - 1)) {
                 const newId = currentId + width;
                 const newSquare = document.getElementById(newId);
-                click(newSquare);
+                if (newSquare) click(newSquare);
+            }
+            if (currentId < width * (width - 1) - 1 && !isRightEdge) {
+                const newId = currentId + width + 1;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            if (currentId < width * (width - 1) && !isLeftEdge) {
+                const newId = currentId + width - 1;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            if (currentId < width - 1 && !isRightEdge) {
+                const newId = currentId + 1;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            if (currentId > width && !isLeftEdge) {
+                const newId = currentId - width - 1;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
             }
         }, 10);
     }
-
+    
     function gameOver() {
         isGameOver = true;
         result.innerHTML = 'Game Over!';
