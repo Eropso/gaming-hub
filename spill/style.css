@@ -53,7 +53,40 @@ p {
 }
 
 
-
+#leaderboard {
+    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  #leaderboard h2 {
+    color: white;
+  }
+  
+  #leaderboard-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  #leaderboard-list li {
+    color: white;
+    margin: 5px 0;
+  }
+  
+  #save-score {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #save-score:hover {
+    background-color: #45a049;
+  }
 
 @keyframes floatUp {
     0% {

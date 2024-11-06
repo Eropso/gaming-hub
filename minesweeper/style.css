@@ -1,21 +1,26 @@
 body {
-    display: flex;                 
-    justify-content: center;        
-    align-items: center;           
-    height: 100vh;                
-    margin: 0;                     
-    background-color: #f0f0f0;   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
 }
-
-
-
-
-
-
-
-
-.container {
-    width: 500px;
+.game-container {
+    display: flex;
+    gap: 20px;
+    align-items: center; 
+    width: 100%;
+    position: absolute;  
+    top: 50%; 
+    transform: translateY(-50%); 
+}
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
 }
 
 
@@ -25,8 +30,6 @@ body {
     display: flex;
     flex-wrap: wrap;
     background-color: #dcd6bc;
-    margin-left: 50px;
-    margin-top: 20px;
     border: 10px solid #dcd6bc;
     margin-bottom: 10px;
 }
@@ -74,4 +77,53 @@ div {
 
 .four {
     color: #bb41d3;
+}
+
+
+.leaderboard {
+    background-color: #f0f0f0;
+    align-items: center;
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: absolute; 
+    right: 0;       
+    top: 0;       
+}
+
+.leaderboard h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.leaderboard table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard th, .leaderboard td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.leaderboard th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+
+
+@keyframes reveal {
+    from {
+        transform: scale(0.1);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.checked {
+    animation: reveal 0.2s ease-in-out;
 }

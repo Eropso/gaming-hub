@@ -25,7 +25,7 @@ include("database.php");
                     <img src="./spill/punch.png" alt="Punch">
                     <h3>Punch Game</h3>
                 </a>
-                <a href="./minesweeper/index.html" class="game-card">
+                <a href="./minesweeper/index.php" class="game-card">
                     <p>💣</p>
                     <h3>Minesweeper</h3>
                 </a>
@@ -34,7 +34,7 @@ include("database.php");
                     <img src="./spill/punch.png" alt="Punch">
                     <h3>Punch Game</h3>
                 </a>
-                <a href="login.php?redirect=./minesweeper/index.html" class="game-card">
+                <a href="login.php?redirect=./minesweeper/index.php" class="game-card">
                 <p>💣</p>
                 <h3>Minesweeper</h3>
                 </a>
