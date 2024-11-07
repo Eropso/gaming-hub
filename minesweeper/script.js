@@ -67,20 +67,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getSafeZoneIndices(centerIndex) {
-        const safeZone = [centerIndex];
+        const safeZone = new Set([centerIndex]);
         const isLeftEdge = (centerIndex % width === 0);
         const isRightEdge = (centerIndex % width === width - 1);
     
-        if (centerIndex > 0 && !isLeftEdge) safeZone.push(centerIndex - 1); // Left
-        if (centerIndex > width - 1) safeZone.push(centerIndex - width); // Above
-        if (centerIndex > width && !isRightEdge) safeZone.push(centerIndex - width + 1); // Above right
-        if (centerIndex < width * (width - 1)) safeZone.push(centerIndex + width); // Below
-        if (centerIndex < width * (width - 1) - 1 && !isRightEdge) safeZone.push(centerIndex + width + 1); // Below right
-        if (centerIndex < width * (width - 1) && !isLeftEdge) safeZone.push(centerIndex + width - 1); // Below left
-        if (centerIndex < width - 1 && !isRightEdge) safeZone.push(centerIndex + 1); // Right
-        if (centerIndex > width && !isLeftEdge) safeZone.push(centerIndex - width - 1); // Above left
+        // All possible directions (including diagonals)
+        const directions = [
+            -width-1, -width, -width+1,  // top left, top, top right
+            -1, 1,                       // left, right
+            width-1, width, width+1      // bottom left, bottom, bottom right
+        ];
     
-        return safeZone;
+        directions.forEach(direction => {
+            const newIndex = centerIndex + direction;
+            
+            // Check if the new index is within bounds
+            if (newIndex >= 0 && newIndex < width * width) {
+                // Check edge cases
+                if ((isLeftEdge && [direction-1, -width-1, width-1].includes(direction)) ||
+                    (isRightEdge && [direction+1, -width+1, width+1].includes(direction))) {
+                    return;
+                }
+                safeZone.add(newIndex);
+            }
+        });
+    
+        return Array.from(safeZone);
     }
     
 
@@ -125,34 +137,79 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!startTime) {
             startTimer();
         }
-
+    
         if (isGameOver || square.classList.contains('checked') || square.classList.contains('flag')) return;
-
+    
         // Handle first click
         if (firstClick) {
             firstClick = false;
             generateBombs(square.id);
-            // Automatically reveal area around first click
-            checkSquare(square);
+            revealArea(parseInt(square.id));
             return;
         }
-
+    
         if (square.classList.contains('bomb')) {
             gameOver();
-        } else {
-            let total = square.getAttribute('data');
-            if (total != 0) {
-                square.classList.add('checked');
-                if (total == 1) square.classList.add('one');
-                if (total == 2) square.classList.add('two');
-                if (total == 3) square.classList.add('three');
-                if (total == 4) square.classList.add('four');
-                square.innerHTML = total;
-                return;
-            }
-            checkSquare(square);
+            return;
         }
-        square.classList.add('checked');
+    
+        let total = square.getAttribute('data');
+        if (total != 0) {
+            square.classList.add('checked');
+            if (total == 1) square.classList.add('one');
+            if (total == 2) square.classList.add('two');
+            if (total == 3) square.classList.add('three');
+            if (total == 4) square.classList.add('four');
+            square.innerHTML = total;
+            return;
+        }
+    
+        revealArea(parseInt(square.id));
+    }
+
+    function revealArea(centerIndex) {
+        const checked = new Set();
+        const toCheck = [centerIndex];
+    
+        while (toCheck.length > 0) {
+            const currentIndex = toCheck.pop();
+            if (checked.has(currentIndex)) continue;
+            
+            checked.add(currentIndex);
+            const currentSquare = squares[currentIndex];
+            
+            // Skip if it's already checked or has a flag
+            if (currentSquare.classList.contains('checked') || 
+                currentSquare.classList.contains('flag')) continue;
+    
+            // Reveal the current square
+            currentSquare.classList.add('checked');
+            
+            // If it's a number, show it
+            const total = currentSquare.getAttribute('data');
+            if (total !== null && total !== '0') {
+                currentSquare.innerHTML = total;
+                if (total == 1) currentSquare.classList.add('one');
+                if (total == 2) currentSquare.classList.add('two');
+                if (total == 3) currentSquare.classList.add('three');
+                if (total == 4) currentSquare.classList.add('four');
+                continue; // Don't expand from numbers
+            }
+    
+            // If it's an empty square, add neighbors to check
+            const isLeftEdge = (currentIndex % width === 0);
+            const isRightEdge = (currentIndex % width === width - 1);
+    
+            // Check all 8 surrounding squares
+            if (currentIndex > 0 && !isLeftEdge) toCheck.push(currentIndex - 1);
+            if (currentIndex > width - 1) toCheck.push(currentIndex - width);
+            if (currentIndex > width && !isRightEdge) toCheck.push(currentIndex - width + 1);
+            if (currentIndex < width * width - 1 && !isRightEdge) toCheck.push(currentIndex + 1);
+            if (currentIndex < width * (width - 1)) toCheck.push(currentIndex + width);
+            if (currentIndex < width * (width - 1) - 1 && !isRightEdge) toCheck.push(currentIndex + width + 1);
+            if (currentIndex < width * (width - 1) && !isLeftEdge) toCheck.push(currentIndex + width - 1);
+            if (currentIndex > width && !isLeftEdge) toCheck.push(currentIndex - width - 1);
+        }
     }
 
     function checkSquare(square) {
@@ -204,10 +261,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 10);
     }
+
+    function saveScore(time) {
+        fetch('save_score.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'time=' + time
+        })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch((error) => console.error('Error:', error));
+    }
     
     function gameOver() {
         isGameOver = true;
         result.innerHTML = 'Game Over!';
+        clearInterval(timerInterval);  // Stop the timer
+    
         // Reveal all bombs
         squares.forEach(square => {
             if (square.classList.contains('bomb')) {
@@ -228,6 +300,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (matchedFlags === bombAmount) {
             isGameOver = true;
             result.innerHTML = 'You Win!';
+            clearInterval(timerInterval);  // Stop the timer
+            const finalTime = parseInt(timerDisplay.innerHTML);
+            saveScore(finalTime);  // Save the score
         }
     }
 

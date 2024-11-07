@@ -5,6 +5,16 @@ include("../database.php");
 $sql = "SELECT username, best_time FROM minesweeper_scores JOIN users ON minesweeper_scores.user_id = users.id ORDER BY best_time ASC LIMIT 10";
 $result = mysqli_query($conn, $sql);
 $leaderboard = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $game_name = "Minesweeper";
+    $sql = "INSERT INTO game_plays (user_id, game_name) VALUES (?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "is", $user_id, $game_name);
+    mysqli_stmt_execute($stmt);
+}
 ?>
 
 <!DOCTYPE html>
