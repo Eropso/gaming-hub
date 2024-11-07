@@ -2,9 +2,19 @@
 session_start();
 include("../database.php"); 
 
+
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("Location: ../login.php?redirect=/minesweeper/index.php");
+    exit();
+}
+
+
 $sql = "SELECT username, best_time FROM minesweeper_scores JOIN users ON minesweeper_scores.user_id = users.id ORDER BY best_time ASC LIMIT 10";
 $result = mysqli_query($conn, $sql);
 $leaderboard = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+
 
 
 if (isset($_SESSION['user_id'])) {
@@ -16,6 +26,9 @@ if (isset($_SESSION['user_id'])) {
     mysqli_stmt_execute($stmt);
 }
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">

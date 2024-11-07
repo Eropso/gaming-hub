@@ -2,6 +2,13 @@
 session_start();
 include("../database.php");
 
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+  header("Location: ../login.php?redirect=/spiill/index.php");
+  exit();
+}
+
+
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $game_name = "PunchGame";
@@ -10,6 +17,9 @@ if (isset($_SESSION['user_id'])) {
     mysqli_stmt_bind_param($stmt, "is", $user_id, $game_name);
     mysqli_stmt_execute($stmt);
 }
+
+
+
 ?>
 
 
