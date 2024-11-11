@@ -42,9 +42,9 @@ if (isset($_SESSION['user_id'])) {
     <div class="game-container">
         <div class="game-area">
             <div class="grid"></div>
-            <div>Flags left: <span id="flags-left"></span></div>
-            <div>Time: <span id="timer">0</span></div>
-            <div id="result"></div>
+            <div class="white">Flags left: <span id="flags-left"></span></div>
+            <div class="white">Time: <span id="timer">0</span></div>
+            <div class="white" id="result"></div>
         </div>
         <div class="leaderboard">
             <h2>Leaderboard</h2>

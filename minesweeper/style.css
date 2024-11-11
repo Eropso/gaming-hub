@@ -4,8 +4,25 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-image: url('northkorea.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
 }
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black overlay with 50% opacity */
+    backdrop-filter: blur(5px); /* Slight blur effect */
+    z-index: -1;
+}
+
 .game-container {
     display: flex;
     gap: 20px;
@@ -82,6 +99,7 @@ div {
 
 .leaderboard {
     background-color: #f0f0f0;
+    border: 5px solid black;
     align-items: center;
     overflow-y: auto;
     box-sizing: border-box;
@@ -126,4 +144,10 @@ div {
 
 .checked {
     animation: reveal 0.2s ease-in-out;
+}
+
+
+
+.white {
+    color: white;
 }

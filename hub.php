@@ -19,51 +19,44 @@ while ($row = mysqli_fetch_assoc($result)) {
     <title>Game Hub</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body>
     <div class="container">
-        <h1 class="title">Erozone</h1>
-
-        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
-            <a href="logout.php" class="logout-button">Logout</a>
-        <?php endif; ?>
-
-        <div class="game-cards">
+        <header class="header">
+            <h1 class="title">Erozone</h1>
             <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
-                <a href="./spill/index.php" class="game-card">
-                    <img src="./spill/punch.png" alt="Punch">
-                    <h3>Punch Game</h3>
-                </a>
-                <a href="./minesweeper/index.php" class="game-card">
-                    <p>💣</p>
-                    <h3>Minesweeper</h3>
-                </a>
-            <?php else: ?>
-                <a href="login.php?redirect=./spill/index.php" class="game-card">
-                    <img src="./spill/punch.png" alt="Punch">
-                    <h3>Punch Game</h3>
-                </a>
-                <a href="login.php?redirect=./minesweeper/index.php" class="game-card">
-                <p>💣</p>
-                <h3>Minesweeper</h3>
-                </a>
+                <a href="logout.php" class="logout-button">Logout</a>
             <?php endif; ?>
+        </header>
 
-            
+        <section class="game-section">
+            <div class="game-cards">
+                <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+                    <a href="./snake/index.php" class="game-card">
+                        <img src="./snake/snake.jpg" alt="Snake Game">
+                        <h3>Snake</h3>
+                    </a>
+                    <a href="./minesweeper/index.php" class="game-card">
+                        <img src="./minesweeper/northkorea.png" alt="Minesweeper Game">
+                        <h3>Minesweeper</h3>
+                    </a>
+                <?php else: ?>
+                    <a href="login.php?redirect=./snake/index.php" class="game-card">
+                        <img src="./snake/snake.jpg" alt="Snake Game">
+                        <h3>Snake</h3>
+                    </a>
+                    <a href="login.php?redirect=./minesweeper/index.php" class="game-card">
+                        <img src="./minesweeper/northkorea.png" alt="Minesweeper Game">
+                        <h3>Minesweeper</h3>
+                    </a>
+                <?php endif; ?>
+            </div>
+
             <div class="chart-container">
                 <canvas id="popularityChart"></canvas>
             </div>
-        </div>
-
-
-
-
+        </section>
     </div>
-
-
-    
-
 
     <script>
         const gameData = <?php echo json_encode($gameData); ?>;
@@ -98,8 +91,5 @@ while ($row = mysqli_fetch_assoc($result)) {
             }
         });
     </script>
-
-
-    
 </body>
 </html>

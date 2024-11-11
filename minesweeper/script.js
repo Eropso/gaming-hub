@@ -100,15 +100,59 @@ document.addEventListener('DOMContentLoaded', function() {
         let total = 0;
         const isLeftEdge = (index % width === 0);
         const isRightEdge = (index % width === width - 1);
+    
+        if (index > 0 && !isLeftEdge && squares[index - 1].classList.contains('bomb')) total++;            // left
+        if (index > 9 && squares[index - width].classList.contains('bomb')) total++;                       // top
+        if (index > 9 && !isLeftEdge && squares[index - 1 - width].classList.contains('bomb')) total++;   // top-left
+        if (index > 9 && !isRightEdge && squares[index + 1 - width].classList.contains('bomb')) total++;  // top-right
+        if (index < 99 && !isRightEdge && squares[index + 1].classList.contains('bomb')) total++;         // right
+        if (index < 90 && !isLeftEdge && squares[index - 1 + width].classList.contains('bomb')) total++;  // bottom-left
+        if (index < 90 && squares[index + width].classList.contains('bomb')) total++;                      // bottom
+        if (index < 90 && !isRightEdge && squares[index + 1 + width].classList.contains('bomb')) total++; // bottom-right// No selected code provided, so I'll suggest a general improvement to the code
 
-        if (index > 0 && !isLeftEdge && squares[index - 1].classList.contains('bomb')) total++;
-        if (index > 9 && !isRightEdge && squares[index + 1 - width].classList.contains('bomb')) total++;
-        if (index > 10 && squares[index - width].classList.contains('bomb')) total++;
-        if (index > 11 && !isLeftEdge && squares[index - 1 - width].classList.contains('bomb')) total++;
-        if (index < 98 && !isRightEdge && squares[index + 1].classList.contains('bomb')) total++;
-        if (index < 90 && !isLeftEdge && squares[index - 1 + width].classList.contains('bomb')) total++;
-        if (index < 88 && !isRightEdge && squares[index + 1 + width].classList.contains('bomb')) total++;
-        if (index < 89 && squares[index + width].classList.contains('bomb')) total++;
+// Add a function to handle keyboard navigation
+function handleKeyboardNavigation(event) {
+    if (isGameOver) return;
+    const currentSquare = document.querySelector('.checked:last-child');
+    if (!currentSquare) return;
+    const currentIndex = parseInt(currentSquare.id);
+    const isLeftEdge = (currentIndex % width === 0);
+    const isRightEdge = (currentIndex % width === width - 1);
+
+    switch (event.key) {
+        case 'ArrowUp':
+            if (currentIndex > width - 1) {
+                const newId = currentIndex - width;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            break;
+        case 'ArrowDown':
+            if (currentIndex < width * (width - 1)) {
+                const newId = currentIndex + width;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            break;
+        case 'ArrowLeft':
+            if (currentIndex > 0 && !isLeftEdge) {
+                const newId = currentIndex - 1;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            break;
+        case 'ArrowRight':
+            if (currentIndex < width * width - 1 && !isRightEdge) {
+                const newId = currentIndex + 1;
+                const newSquare = document.getElementById(newId);
+                if (newSquare) click(newSquare);
+            }
+            break;
+    }
+}
+
+// Add event listener for keyboard navigation
+document.addEventListener('keydown', handleKeyboardNavigation);
 
         return total;
     }
