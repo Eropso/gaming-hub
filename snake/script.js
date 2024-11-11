@@ -20,8 +20,8 @@ function initializeGame() {
 function generateFood() {
     do {
         food = {
-            x: Math.floor(Math.random() * 18 + 1) * box, // Avoid corners
-            y: Math.floor(Math.random() * 18 + 1) * box  // Avoid corners
+            x: Math.floor(Math.random() * 18 + 1) * box, 
+            y: Math.floor(Math.random() * 18 + 1) * box  
         };
     } while (snake.some(segment => segment.x === food.x && segment.y === food.y));
 }
@@ -51,7 +51,7 @@ function gameLoop() {
         if (score > highScore) {
             highScore = score;
             localStorage.setItem('highScore', JSON.stringify(highScore));
-            saveScore(score); // Save the score to the database
+            saveScore(score); 
         }
         alert('Game Over! Your score: ' + score);
         updateHighScore();

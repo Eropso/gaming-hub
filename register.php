@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
                 $mail->Username = 'phpkuben@gmail.com';
-                $mail->Password = 'srnq cqiy dqzu kyfl'; // Keep credentials secure
+                $mail->Password = 'srnq cqiy dqzu kyfl';
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 

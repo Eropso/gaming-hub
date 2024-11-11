@@ -2,7 +2,6 @@
 session_start();
 include("database.php");
 
-// Fetch game popularity data
 $sql = "SELECT game_name, COUNT(*) as play_count FROM game_plays GROUP BY game_name ORDER BY play_count DESC LIMIT 5";
 $result = mysqli_query($conn, $sql);
 $gameData = [];

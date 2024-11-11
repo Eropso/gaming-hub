@@ -73,17 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // All possible directions (including diagonals)
         const directions = [
-            -width-1, -width, -width+1,  // top left, top, top right
-            -1, 1,                       // left, right
-            width-1, width, width+1      // bottom left, bottom, bottom right
+            -width-1, -width, -width+1,  
+            -1, 1,                      
+            width-1, width, width+1      
         ];
     
         directions.forEach(direction => {
             const newIndex = centerIndex + direction;
             
-            // Check if the new index is within bounds
             if (newIndex >= 0 && newIndex < width * width) {
-                // Check edge cases
                 if ((isLeftEdge && [direction-1, -width-1, width-1].includes(direction)) ||
                     (isRightEdge && [direction+1, -width+1, width+1].includes(direction))) {
                     return;
@@ -101,16 +99,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const isLeftEdge = (index % width === 0);
         const isRightEdge = (index % width === width - 1);
     
-        if (index > 0 && !isLeftEdge && squares[index - 1].classList.contains('bomb')) total++;            // left
-        if (index > 9 && squares[index - width].classList.contains('bomb')) total++;                       // top
-        if (index > 9 && !isLeftEdge && squares[index - 1 - width].classList.contains('bomb')) total++;   // top-left
-        if (index > 9 && !isRightEdge && squares[index + 1 - width].classList.contains('bomb')) total++;  // top-right
-        if (index < 99 && !isRightEdge && squares[index + 1].classList.contains('bomb')) total++;         // right
-        if (index < 90 && !isLeftEdge && squares[index - 1 + width].classList.contains('bomb')) total++;  // bottom-left
-        if (index < 90 && squares[index + width].classList.contains('bomb')) total++;                      // bottom
-        if (index < 90 && !isRightEdge && squares[index + 1 + width].classList.contains('bomb')) total++; // bottom-right// No selected code provided, so I'll suggest a general improvement to the code
+        if (index > 0 && !isLeftEdge && squares[index - 1].classList.contains('bomb')) total++;        
+        if (index > 9 && squares[index - width].classList.contains('bomb')) total++;                     
+        if (index > 9 && !isLeftEdge && squares[index - 1 - width].classList.contains('bomb')) total++;  
+        if (index > 9 && !isRightEdge && squares[index + 1 - width].classList.contains('bomb')) total++;  
+        if (index < 99 && !isRightEdge && squares[index + 1].classList.contains('bomb')) total++;        
+        if (index < 90 && !isLeftEdge && squares[index - 1 + width].classList.contains('bomb')) total++;  
+        if (index < 90 && squares[index + width].classList.contains('bomb')) total++;                      
+        if (index < 90 && !isRightEdge && squares[index + 1 + width].classList.contains('bomb')) total++; 
 
-// Add a function to handle keyboard navigation
 function handleKeyboardNavigation(event) {
     if (isGameOver) return;
     const currentSquare = document.querySelector('.checked:last-child');
@@ -237,7 +234,7 @@ document.addEventListener('keydown', handleKeyboardNavigation);
                 if (total == 2) currentSquare.classList.add('two');
                 if (total == 3) currentSquare.classList.add('three');
                 if (total == 4) currentSquare.classList.add('four');
-                continue; // Don't expand from numbers
+                continue; 
             }
     
             // If it's an empty square, add neighbors to check
@@ -262,7 +259,6 @@ document.addEventListener('keydown', handleKeyboardNavigation);
         const isRightEdge = (currentId % width === width - 1);
     
         setTimeout(() => {
-            // Check neighboring squares while avoiding out-of-bounds indices
             if (currentId > 0 && !isLeftEdge) {
                 const newId = currentId - 1;
                 const newSquare = document.getElementById(newId);
@@ -322,7 +318,7 @@ document.addEventListener('keydown', handleKeyboardNavigation);
     function gameOver() {
         isGameOver = true;
         result.innerHTML = 'Game Over!';
-        clearInterval(timerInterval);  // Stop the timer
+        clearInterval(timerInterval); 
     
         // Reveal all bombs
         squares.forEach(square => {
@@ -344,9 +340,9 @@ document.addEventListener('keydown', handleKeyboardNavigation);
         if (matchedFlags === bombAmount) {
             isGameOver = true;
             result.innerHTML = 'You Win!';
-            clearInterval(timerInterval);  // Stop the timer
+            clearInterval(timerInterval);  
             const finalTime = parseInt(timerDisplay.innerHTML);
-            saveScore(finalTime);  // Save the score
+            saveScore(finalTime);  
         }
     }
 
