@@ -42,7 +42,6 @@ body {
     text-align: center;
 }
 
-/* Input fields */
 input[type="email"],
 input[type="password"],
 input[type="text"] {
@@ -55,7 +54,6 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-/* Button styling */
 button {
     width: 100%;
     padding: 10px;

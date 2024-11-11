@@ -14,7 +14,7 @@ function initializeGame() {
     generateFood();
     updateHighScore();
     if (game) clearInterval(game);
-    game = setInterval(gameLoop, 150); // Faster speed (150ms)
+    game = setInterval(gameLoop, 150);
 }
 
 function generateFood() {
@@ -51,6 +51,7 @@ function gameLoop() {
         if (score > highScore) {
             highScore = score;
             localStorage.setItem('highScore', JSON.stringify(highScore));
+            saveScore(score); // Save the score to the database
         }
         alert('Game Over! Your score: ' + score);
         updateHighScore();
@@ -83,5 +84,17 @@ function gameLoop() {
     context.fillText('Score: ' + score, 10, 20);
 }
 
+function saveScore(score) {
+    fetch('save_snake_score.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'score=' + score
+    })
+    .then(response => response.text())
+    .then(data => console.log(data))
+    .catch((error) => console.error('Error:', error));
+}
 
 initializeGame();
