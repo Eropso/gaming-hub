@@ -33,7 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit']) && $_POST['s
                 $_SESSION['otp'] = $otp;
                 $_SESSION['email'] = $email;
                 $_SESSION['is_new_user'] = false;
-                $_SESSION['loggedin'] = true;
                 $_SESSION['user_id'] = $user['id']; 
 
 
